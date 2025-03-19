@@ -3,6 +3,7 @@ import { IconButton } from "@mui/material";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PersonIcon from '@mui/icons-material/Person';
+import MailIcon from '@mui/icons-material/Mail';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -74,8 +75,8 @@ const LoginPage = () => {
                                             <input name="text" value={userName} onChange={(e) => setUserName(e.target.value)} type="email" className="outline-none bg-transparent" placeholder="abolfazl" />
                                         </div>
                                     </div>
-                                    <div className="w-full h-[58px] bg-[#ECECEC] flex items-center justify-center gap-6 rounded-md px-6">
-                                        <img className="w-6 h-6" src="src/Authentication/Login/img/iconLogin1.svg" alt="" />
+                                    <div className="w-full h-[58px] bg-[#ECECEC] flex items-center justify-center gap-6 rounded-md px-4">
+                                        <MailIcon fontSize="large" />
                                         <div className="flex flex-col w-full h-full py-2">
                                             <label className="text-[12px]">Email</label>
                                             <input name="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} type="email" className="outline-none bg-transparent" placeholder="example@gmail.com" />

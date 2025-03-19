@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IconButton } from "@mui/material";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import MailIcon from '@mui/icons-material/Mail';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 
@@ -14,20 +15,16 @@ const LoginPage = () => {
     const handleLogin = async () => {/* اطلاعات کاربر ارسال به بکند */
         const data = {
             userEmail: userEmail,
-            password: userPassword,
         };
 
         try {
-            const response = await axios.post('http://192.168.137.1:3000/auth/login', data);
+            const response = await axios.get('http://192.168.137.1:3000/auth/login', data);
             console.log('Login successful:', response.data);
             navigate('/')
-
         } catch (error) {
             console.error('error sending data:', error)
         }
     }
-
-
 
 
     return (
@@ -60,7 +57,7 @@ const LoginPage = () => {
                             <div className="w-full h-[70%] flex flex-col gap-6">
                                 <div className="flex flex-col gap-4 mt-4">
                                     <div className="w-full h-[58px] bg-[#ECECEC] flex items-center justify-center gap-6 rounded-md px-6">
-                                        <img className="w-6 h-6" src="src/Authentication/Login/img/iconLogin1.svg" alt="" />
+                                        <MailIcon fontSize="large" />
                                         <div className="flex flex-col w-full h-full py-2">
                                             <label className="text-[12px]">Email</label>
                                             <input name="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} type="email" className="outline-none bg-transparent" placeholder="example@gmail.com" />
@@ -78,16 +75,10 @@ const LoginPage = () => {
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-6">
-                                    <div className="flex justify-between">
-                                        <div className="flex gap-2 items-center">
-                                            <input name="remember" type="checkbox" className="cursor-pointer" />
-                                            <p className="text-[13px]">Remember me</p>
-                                        </div>
-                                        <a href="#" className="text-[13px] text-[#6358DC]">Forgot Password?</a>
-                                    </div>
+                                    <a href="/login/forgot-password" className="text-[13px] text-[#6358DC] self-center">Forgot Password?</a>
                                     <div className="flex flex-col gap-8 items-center">
                                         <button type="button" className="w-full h-[60px] bg-[#6358DC] text-white rounded-lg cursor-pointer" onClick={handleLogin}>Login</button>
-                                        <p>Don't have an account?<a href="/signUp" className="text-[#6358DC]">Sign Up</a></p>
+                                        <p>Don't have an account?<a href="/signup" className="text-[#6358DC]">Sign Up</a></p>
                                     </div>
                                 </div>
                             </div>

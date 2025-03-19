@@ -15,10 +15,11 @@ const LoginPage = () => {
     const handleLogin = async () => {/* اطلاعات کاربر ارسال به بکند */
         const data = {
             userEmail: userEmail,
+            password: userPassword,
         };
 
         try {
-            const response = await axios.get('http://192.168.137.1:3000/auth/login', data);
+            const response = await axios.post('http://192.168.137.1:3000/auth/login', data);
             console.log('Login successful:', response.data);
             navigate('/')
         } catch (error) {

@@ -1,6 +1,7 @@
 import LoginPage from './Authentication/Login/LoginPage.jsx';
 import ForgotPass from './Authentication/Forgot/ForgotPass.jsx';
 import SignUpPage from './Authentication/SignUp/SignUpPage.jsx';
+import HomePage from './Authentication/Home/HomePage.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
     <div>
       <BrowserRouter>
         <Routes>
+          <Route path='/' element={<HomePage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/login/forgot-password' element={<ForgotPass />} />
           <Route path='/signup' element={<SignUpPage />} />

@@ -2,9 +2,14 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import TaskComponent from '../../Components/taskComponent';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import * as React from 'react';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import { useAtom } from 'jotai';
+import { taskListAtom } from '../../Atoms/AtomsNewTask'
 
 const style = {
     position: 'absolute',
@@ -17,7 +22,9 @@ const style = {
     p: 2,
     display: 'flex',
     flexDirection: 'column',
-    gap: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 3,
     borderRadius: 5
 };
 
@@ -25,6 +32,53 @@ const HomePage = () => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [dueDates, setDueDates] = React.useState('');
+    const [priority, setPriority] = React.useState('');
+    const [effort, setEffort] = React.useState('');
+    const [textTitle, setTextTitle] = React.useState('');
+    const [clientName, setClientName] = React.useState('');
+    const [taskList, setTaskList] = useAtom(taskListAtom);
+
+    const handleTextTitle = (e) => {
+        setTextTitle(e.target.value)
+    }
+
+    const handleDueDates = (event) => {
+        setDueDates(event.target.value);
+    };
+
+    const handlePriority = (event) => {
+        setPriority(event.target.value);
+    };
+
+    const handleEffort = (event) => {
+        setEffort(event.target.value);
+    };
+
+    const handleClientName = (e) => {
+        setClientName(e.target.value)
+    }
+
+    const handleSetTask = () => {
+        if (!textTitle.trim()) return;
+
+        const newTask = {
+            title: textTitle,
+            clientName: clientName,
+            dueDate: dueDates,
+            priority,
+            effort
+        };
+
+        setTaskList([...taskList, newTask]);
+
+        setTextTitle('');
+        setDueDates('');
+        setPriority('');
+        setEffort('');
+        setClientName('')
+        setOpen(false);
+    };
 
     return (
         <div className="w-full h-screen bg-[#6358DC]">
@@ -46,16 +100,64 @@ const HomePage = () => {
                             aria-describedby="modal-modal-description"
                         >
                             <Box sx={style}>
-                                <h1 className='text-xl font-bold text-[#6358DC]'>New Task</h1>
-                                <div className='flex flex-col gap-2 pl-2'>
-                                    <div>
-                                        <label htmlFor="" className='font-bold self-start'>Title</label>
-                                        <input type="text" placeholder='Enter your Title Task' className='w-[95%] outline-none bg-[#ECECEC] p-2 rounded' />
+                                <h1 className='text-xl font-bold text-[#6358DC] self-start'>New Task</h1>
+                                <div className='flex flex-col gap-6 w-[95%]'>
+                                    <div className='w-full flex flex-col gap-2'>
+                                        <label htmlFor="" className='text-[18px] self-start'>Title</label>
+                                        <input type="text" placeholder='Enter your Title Task' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={textTitle} onChange={handleTextTitle} />
                                     </div>
-                                    <div>
-                                        <label htmlFor="">Priority</label>
-                                        <select name="" id=""></select>
+                                    <div className='w-full flex flex-col gap-2'>
+                                        <label htmlFor="" className='text-[18px] self-start'>Client Name or project</label>
+                                        <input type="text" placeholder='Enter your Client Name or project' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={clientName} onChange={handleClientName} />
                                     </div>
+                                    <div className='flex justify-between w-full'>
+                                        <FormControl sx={{ mt: 1, width: '30%' }}>
+                                            <InputLabel>Due Dates</InputLabel>
+                                            <Select
+                                                value={dueDates}
+                                                onChange={handleDueDates}
+                                                autoWidth
+                                                label="DueDates"
+                                            >
+                                                <MenuItem value="Sunday">Sunday</MenuItem>
+                                                <MenuItem value="Monday">Monday</MenuItem>
+                                                <MenuItem value="Tuesday">Tuesday</MenuItem>
+                                                <MenuItem value="Wednesday">Wednesday</MenuItem>
+                                                <MenuItem value="Thursday">Thursday</MenuItem>
+                                                <MenuItem value="Friday">Friday</MenuItem>
+                                                <MenuItem value="Saturday">Saturday</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl sx={{ mt: 1, minWidth: '30%' }}>
+                                            <InputLabel >Priority</InputLabel>
+                                            <Select
+                                                value={priority}
+                                                onChange={handlePriority}
+                                                autoWidth
+                                                label="Priority"
+                                            >
+                                                <MenuItem value="Sunday">Low</MenuItem>
+                                                <MenuItem value="Monday">Medium</MenuItem>
+                                                <MenuItem value="Tuesday">High</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl sx={{ mt: 1, minWidth: '33%' }}>
+                                            <InputLabel >Level of Effort</InputLabel>
+                                            <Select
+                                                value={effort}
+                                                onChange={handleEffort}
+                                                autoWidth
+                                                label="Effort"
+                                            >
+                                                <MenuItem value="Sunday">Easy</MenuItem>
+                                                <MenuItem value="Monday">Moderate</MenuItem>
+                                                <MenuItem value="Tuesday">Hard</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    <Button onClick={handleSetTask} variant="contained" color="success" style={{ width: '25%', height: '50px', alignSelf: 'center' }}>
+                                        Set Tast
+                                    </Button>
                                 </div>
 
                             </Box>

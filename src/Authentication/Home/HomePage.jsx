@@ -1,4 +1,5 @@
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import TaskComponent from '../../Components/taskComponent';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -60,14 +61,16 @@ const HomePage = () => {
     }
 
     const handleSetTask = () => {
-        if (!textTitle.trim()) return;
+        if (!textTitle.trim() || !clientName || !dueDates || !priority || !effort) return;
 
         const newTask = {
             title: textTitle,
             clientName: clientName,
             dueDate: dueDates,
             priority,
-            effort
+            effort,
+            id: Date.now(),
+            taskDone: false,
         };
 
         setTaskList([...taskList, newTask]);
@@ -81,10 +84,10 @@ const HomePage = () => {
     };
 
     return (
-        <div className="w-full h-screen bg-[#6358DC]">
+        <div className="w-full h-screen bg-[#6358DC] flex flex-col gap-4">
             <h1 className="text-center text-[#fff] font-bold text-4xl h-[5%]">Taskora</h1>
-            <div className="flex justify-center items-center gap-4 h-[95%] w-full">
-                <div className="w-[45%] h-[95%] rounded bg-[#D5CCFF] p-4 flex flex-col gap-4">
+            <div className="flex justify-center items-center gap-4 w-full">
+                <div className="w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
                             <AssignmentIcon fontSize='large' sx={{ color: '#6358DC' }} />
@@ -118,6 +121,7 @@ const HomePage = () => {
                                                 onChange={handleDueDates}
                                                 autoWidth
                                                 label="DueDates"
+                                                variant="outlined"
                                             >
                                                 <MenuItem value="Sunday">Sunday</MenuItem>
                                                 <MenuItem value="Monday">Monday</MenuItem>
@@ -136,9 +140,9 @@ const HomePage = () => {
                                                 autoWidth
                                                 label="Priority"
                                             >
-                                                <MenuItem value="Sunday">Low</MenuItem>
-                                                <MenuItem value="Monday">Medium</MenuItem>
-                                                <MenuItem value="Tuesday">High</MenuItem>
+                                                <MenuItem value="Low">Low</MenuItem>
+                                                <MenuItem value="Medium">Medium</MenuItem>
+                                                <MenuItem value="High">High</MenuItem>
                                             </Select>
                                         </FormControl>
                                         <FormControl sx={{ mt: 1, minWidth: '33%' }}>
@@ -149,14 +153,14 @@ const HomePage = () => {
                                                 autoWidth
                                                 label="Effort"
                                             >
-                                                <MenuItem value="Sunday">Easy</MenuItem>
-                                                <MenuItem value="Monday">Moderate</MenuItem>
-                                                <MenuItem value="Tuesday">Hard</MenuItem>
+                                                <MenuItem value="Easy">Easy</MenuItem>
+                                                <MenuItem value="Moderate">Moderate</MenuItem>
+                                                <MenuItem value="Hard">Hard</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </div>
                                     <Button onClick={handleSetTask} variant="contained" color="success" style={{ width: '25%', height: '50px', alignSelf: 'center' }}>
-                                        Set Tast
+                                        Set Task
                                     </Button>
                                 </div>
 
@@ -168,7 +172,17 @@ const HomePage = () => {
                         <TaskComponent />
                     </div>
                 </div>
-                <div className="w-[45%] h-[95%] rounded bg-[#D5CCFF] p-4"></div>
+                <div className="w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
+                    <div className="flex justify-between items-center">
+                        <div className='flex gap-2'>
+                            <AssignmentTurnedInIcon fontSize='large' sx={{ color: '#6358DC' }} />
+                            <h1 className='text-2xl font-bold'>Done</h1>
+                        </div>
+                    </div>
+                    <div className='flex flex-col items-center gap-2 overflow-y-scroll h-[95%]'>
+                        {/* <TaskComponent /> */}
+                    </div>
+                </div>
             </div>
         </div>
     )

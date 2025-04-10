@@ -69,7 +69,6 @@ const HomePage = () => {
             dueDate: dueDates,
             priority,
             effort,
-            id: Date.now(),
             taskDone: false,
         };
 
@@ -82,6 +81,7 @@ const HomePage = () => {
         setClientName('')
         setOpen(false);
     };
+
 
     return (
         <div className="w-full h-screen bg-[#6358DC] flex flex-col gap-4">
@@ -180,7 +180,7 @@ const HomePage = () => {
                         </div>
                     </div>
                     <div className='flex flex-col items-center gap-2 overflow-y-scroll h-[95%]'>
-                        {/* <TaskComponent /> */}
+                        <TaskComponent />
                     </div>
                 </div>
             </div>

@@ -42,6 +42,10 @@ const TaskComponent = () => {
         }
     }
 
+    const handleAddTaskDone = (taskDone) => {
+        console.log(taskDone.defaultPrevented)
+    }
+
 
     return (
         <>
@@ -49,7 +53,7 @@ const TaskComponent = () => {
                 <div key={index} className='w-[97%] bg-white rounded-[12px] py-3 px-4 h-[105px] flex flex-col justify-between gap-2' id={task.id}>
                     <div className='flex justify-between'>
                         <h1 className='text-xl font-bold pl-1'>{task.title}</h1>
-                        <input type="checkbox" />
+                        <input type="checkbox" checked={task.taskDone} onChange={handleAddTaskDone} />
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-600">
                         <div className='flex gap-2'>

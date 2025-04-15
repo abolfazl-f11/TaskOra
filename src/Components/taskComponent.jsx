@@ -1,9 +1,20 @@
 import { useAtom } from 'jotai';
 import { taskListAtom } from '../Atoms/AtomsNewTask';
 
-const TaskComponent = () => {
+const TaskComponent = ({ mode }) => {
 
-    const [taskList] = useAtom(taskListAtom);
+    const [taskList, setTaskList] = useAtom(taskListAtom);
+
+    const toggleTaskDone = (id) => {
+        const updatedList = taskList.map(task =>
+            task.id === id ? { ...task, taskDone: !task.taskDone } : task
+        );
+        setTaskList(updatedList);
+    };
+
+    const filteredTasks = taskList.filter(task =>
+        mode === 'done' ? task.taskDone : !task.taskDone
+    );
 
     const getPriorityColorIcon = (priority) => {
         switch (priority) {
@@ -42,18 +53,13 @@ const TaskComponent = () => {
         }
     }
 
-    const handleAddTaskDone = (taskDone) => {
-        console.log(taskDone.defaultPrevented)
-    }
-
-
     return (
         <>
-            {taskList.map((task, index) => (
+            {filteredTasks.map((task, index) => (
                 <div key={index} className='w-[97%] bg-white rounded-[12px] py-3 px-4 h-[105px] flex flex-col justify-between gap-2' id={task.id}>
                     <div className='flex justify-between'>
                         <h1 className='text-xl font-bold pl-1'>{task.title}</h1>
-                        <input type="checkbox" checked={task.taskDone} onChange={handleAddTaskDone} />
+                        <input type="checkbox" checked={task.taskDone} onChange={() => toggleTaskDone(task.id)} />
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-600">
                         <div className='flex gap-2'>

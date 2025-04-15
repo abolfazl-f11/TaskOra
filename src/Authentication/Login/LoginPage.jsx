@@ -4,7 +4,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MailIcon from '@mui/icons-material/Mail';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false); /* نشون دادن پسورد */
@@ -23,7 +23,8 @@ const LoginPage = () => {
             console.log('Login successful:', response.data);
             navigate('/')
         } catch (error) {
-            console.error('error sending data:', error)
+            console.error('error sending data:', error);
+            navigate('/signup')
         }
     }
 

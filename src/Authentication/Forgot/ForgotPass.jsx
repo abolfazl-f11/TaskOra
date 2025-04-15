@@ -17,7 +17,7 @@ const ForgotPass = () => {
         try {
             const response = await axios.post('http://192.168.137.1:3000/auth/login', data);
             console.log('Login successful:', response.data);
-            navigate('/')
+            navigate('/login')
 
         } catch (error) {
             console.error('error sending data:', error)

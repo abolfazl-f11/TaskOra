@@ -11,6 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import { useAtom } from 'jotai';
 import { taskListAtom } from '../../Atoms/AtomsNewTask'
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
     position: 'absolute',
@@ -29,6 +31,7 @@ const style = {
     borderRadius: 5
 };
 
+
 const HomePage = () => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -39,21 +42,22 @@ const HomePage = () => {
     const [textTitle, setTextTitle] = React.useState('');
     const [clientName, setClientName] = React.useState('');
     const [taskList, setTaskList] = useAtom(taskListAtom);
+    const navigate = useNavigate();
 
     const handleTextTitle = (e) => {
         setTextTitle(e.target.value)
     }
 
-    const handleDueDates = (event) => {
-        setDueDates(event.target.value);
+    const handleDueDates = (e) => {
+        setDueDates(e.target.value);
     };
 
-    const handlePriority = (event) => {
-        setPriority(event.target.value);
+    const handlePriority = (e) => {
+        setPriority(e.target.value);
     };
 
-    const handleEffort = (event) => {
-        setEffort(event.target.value);
+    const handleEffort = (e) => {
+        setEffort(e.target.value);
     };
 
     const handleClientName = (e) => {
@@ -70,6 +74,7 @@ const HomePage = () => {
             priority,
             effort,
             taskDone: false,
+            id: Date.now()
         };
 
         setTaskList([...taskList, newTask]);
@@ -78,7 +83,7 @@ const HomePage = () => {
         setDueDates('');
         setPriority('');
         setEffort('');
-        setClientName('')
+        setClientName('');
         setOpen(false);
     };
 
@@ -169,7 +174,7 @@ const HomePage = () => {
 
                     </div>
                     <div className='flex flex-col items-center gap-2 overflow-y-scroll h-[95%]'>
-                        <TaskComponent />
+                        <TaskComponent mode="todo" />
                     </div>
                 </div>
                 <div className="w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
@@ -180,7 +185,7 @@ const HomePage = () => {
                         </div>
                     </div>
                     <div className='flex flex-col items-center gap-2 overflow-y-scroll h-[95%]'>
-                        <TaskComponent />
+                        <TaskComponent mode="done" />
                     </div>
                 </div>
             </div>

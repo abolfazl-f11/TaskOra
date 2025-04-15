@@ -42,7 +42,6 @@ const HomePage = () => {
     const [textTitle, setTextTitle] = React.useState('');
     const [clientName, setClientName] = React.useState('');
     const [taskList, setTaskList] = useAtom(taskListAtom);
-    const navigate = useNavigate();
 
     const handleTextTitle = (e) => {
         setTextTitle(e.target.value)

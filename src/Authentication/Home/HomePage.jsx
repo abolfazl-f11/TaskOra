@@ -11,8 +11,10 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import { useAtom } from 'jotai';
 import { taskListAtom } from '../../Atoms/AtomsNewTask'
-import { useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Toaster, toast } from 'react-hot-toast';
+
 
 const style = {
     position: 'absolute',
@@ -33,6 +35,22 @@ const style = {
 
 
 const HomePage = () => {
+
+    const navigator = useNavigate();
+    const token = localStorage.getItem('userToken');
+    React.useEffect(() => {
+        setTimeout(() => {
+            axios.get('http://192.168.137.1:3000/auth/validate-token', {
+                headers: {
+                    Authorization: token,
+                }
+            }).then(() => toast.success(`Welcome to TaskOra!`, { duration: 2000 }))
+                .catch((error => {
+                    navigator('/login')
+                }))
+        }, 3000);
+    }, 3000)
+
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -73,7 +91,7 @@ const HomePage = () => {
             priority,
             effort,
             taskDone: false,
-            id: Date.now()
+            id: Date.now(),
         };
 
         setTaskList([...taskList, newTask]);
@@ -188,6 +206,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
+            <Toaster position="top-center" />
         </div>
     )
 }

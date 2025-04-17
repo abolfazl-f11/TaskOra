@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 import ImgBackground from './Img/Illustration.png'
 import MailIcon from '@mui/icons-material/Mail';
+import { Toaster, toast } from 'react-hot-toast';
 
 
 const ForgotPass = () => {
@@ -11,17 +12,20 @@ const ForgotPass = () => {
 
     const handleLogin = async () => {/* اطلاعات کاربر ارسال به بکند */
         const data = {
-            userEmail: userEmail,
+            Email: userEmail,
         };
 
         try {
-            const response = await axios.post('http://192.168.137.1:3000/auth/login', data);
-            console.log('Login successful:', response.data);
-            navigate('/login')
-
+            await axios.post('http://192.168.137.1:3000/auth/forgot-password', data);
+            toast.success(`A password reset link has been sent to your email. Please check your inbox (and spam folder too).`, { duration: 3000 });
+            setTimeout(() => {
+                navigate('/login')
+            }, 2000);
         } catch (error) {
-            console.error('error sending data:', error)
+            toast.error(`We couldn't find an account with this email. Please create a new one to reset your password`);
+            navigate('/signup')
         }
+        setUserEmail('');
     }
 
 
@@ -56,6 +60,7 @@ const ForgotPass = () => {
                                     </div>
                                 </div>
                                 <button type="button" className="w-full h-[60px] bg-[#6358DC] text-white rounded-lg cursor-pointer" onClick={handleLogin}>Submit</button>
+                                <Toaster position="top-center" />
                             </div>
                         </div>
                     </div>

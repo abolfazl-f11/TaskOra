@@ -5,6 +5,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import MailIcon from '@mui/icons-material/Mail';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Toaster, toast } from 'react-hot-toast';
+
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false); /* نشون دادن پسورد */
@@ -19,13 +21,17 @@ const LoginPage = () => {
         };
 
         try {
-            const response = await axios.post('http://192.168.137.1:3000/auth/login', data);
-            console.log('Login successful:', response.data);
-            navigate('/')
+            const require = await axios.post('http://192.168.137.1:3000/auth/login', data);
+            localStorage.setItem('userToken', require.data.accessToken);
+            toast.success(`Welcome back! You’ve successfully logged in.`, { duration: 2000 });
+            setTimeout(() => {
+                navigate('/')
+            }, 1000);
         } catch (error) {
-            console.error('error sending data:', error);
-            navigate('/signup')
+            toast.error(`It looks like you don't have an account yet. Please sign up to continue`);
         }
+        setUserEmail('')
+        setUserPassword('')
     }
 
 
@@ -81,6 +87,7 @@ const LoginPage = () => {
                                     <div className="flex flex-col gap-8 items-center">
                                         <button type="button" className="w-full h-[60px] bg-[#6358DC] text-white rounded-lg cursor-pointer" onClick={handleLogin}>Login</button>
                                         <p>Don't have an account?<a href="/signup" className="text-[#6358DC]">Sign Up</a></p>
+                                        <Toaster position="top-center" />
                                     </div>
                                 </div>
                             </div>

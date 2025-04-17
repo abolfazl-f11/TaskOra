@@ -6,7 +6,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import MailIcon from '@mui/icons-material/Mail';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import { Toaster, toast } from 'react-hot-toast';
 
 
 const LoginPage = () => {
@@ -20,22 +20,18 @@ const LoginPage = () => {
         const data = {
             userName: userName,
             userEmail: userEmail,
-            password: userPassword
+            password: userPassword,
         };
 
         try {
-            const response = await axios.post('http://192.168.137.1:3000/auth/register', data);
-            console.log('Login successful:', response.data);
-            navigate("/login");
-
+            await axios.post('http://192.168.137.1:3000/auth/register', data);
+            toast.success(`Account created successfully! Let’s get started.`, { duration: 2000 });
+            setTimeout(() => {
+                navigate('/login')
+            }, 2000);
         } catch (error) {
-            console.error('error sending data:', error)
+            toast.error(`This email is already registered. Try logging in instead`);
         }
-    }
-
-
-    const setCookieRemmber = () => {
-        Cookies.set('remmber',)
     }
 
 
@@ -97,6 +93,7 @@ const LoginPage = () => {
                                     <div className="flex flex-col gap-6 items-center">
                                         <button type="button" className="w-full h-[60px] bg-[#6358DC] text-white rounded-lg cursor-pointer" onClick={handleLogin}>Create Account</button>
                                         <p>Don't have an account? <a href="/login" className="text-[#6358DC]">Login</a></p>
+                                        <Toaster position="top-center" />
                                     </div>
                                 </div>
                             </div>

@@ -21,10 +21,19 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 500,
+    width: {
+        xs: '90%',
+        sm: '70%',
+        md: '50%',
+        lg: '40%'
+    },
     bgcolor: 'background.paper',
     boxShadow: 24,
-    p: 2,
+    p: {
+        xs: 2,
+        sm: 3,
+        md: 4
+    },
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -38,21 +47,25 @@ const HomePage = () => {
 
     const navigator = useNavigate();
     const token = localStorage.getItem('userToken');
-    React.useEffect(() => {
-        setTimeout(() => {
-            axios.get('http://192.168.137.1:3000/auth/validate-token', {
+    const handleCheckUserToken = async () => {
+        try {
+            await axios.get(`https://5519-89-44-9-169.ngrok-free.app/auth/task/d`, {
                 headers: {
                     Authorization: token,
                 }
-            }).then(() => toast.success(`Welcome to TaskOra!`, { duration: 2000 }))
-                .catch((error => {
-                    navigator('/login')
-                }))
-        }, 3000);
-    }, 3000)
+            })
+        }
+        catch (error) {
+            console.log('Token invalid or expired');
+            navigator('/login');
+        }
+    }
 
     const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
+    const handleOpen = async () => {
+        await handleCheckUserToken()
+        setOpen(true)
+    };
     const handleClose = () => setOpen(false);
     const [dueDates, setDueDates] = React.useState('');
     const [priority, setPriority] = React.useState('');
@@ -65,9 +78,9 @@ const HomePage = () => {
         setTextTitle(e.target.value)
     }
 
-    const handleDueDates = (e) => {
-        setDueDates(e.target.value);
-    };
+    // const handleDueDates = (e) => {
+    //     setDueDates(e.target.value);
+    // };
 
     const handlePriority = (e) => {
         setPriority(e.target.value);
@@ -81,35 +94,47 @@ const HomePage = () => {
         setClientName(e.target.value)
     }
 
-    const handleSetTask = () => {
-        if (!textTitle.trim() || !clientName || !dueDates || !priority || !effort) return;
+    const handleSetTask = async () => {
+        if (!textTitle.trim() || !clientName.trim() || !priority.trim()) return;
 
         const newTask = {
             title: textTitle,
-            clientName: clientName,
-            dueDate: dueDates,
-            priority,
-            effort,
-            taskDone: false,
-            id: Date.now(),
+            projectName: clientName,
+            // date: dueDates,
+            priority: priority,
+            // level: effort,
+            status: false,
+            id: new Date()
         };
 
-        setTaskList([...taskList, newTask]);
+        try {
+            const response = await axios.post(`https://5519-89-44-9-169.ngrok-free.app/task/c`, newTask, {
+                headers: {
+                    Authorization: token,
+                }
+            })
+            setTaskList([...taskList, response.data]);
 
-        setTextTitle('');
-        setDueDates('');
-        setPriority('');
-        setEffort('');
-        setClientName('');
-        setOpen(false);
+            setTextTitle('');
+            // setDueDates('');
+            setPriority('');
+            setEffort('');
+            setClientName('');
+            setOpen(false);
+
+            toast.success("Task created successfully")
+        } catch {
+            toast.error("Error creating task")
+            setOpen(false);
+        }
     };
 
 
     return (
-        <div className="w-full h-screen bg-[#6358DC] flex flex-col gap-4">
+        <div className="min-h-screen bg-[#6358DC] flex flex-col gap-4">
             <h1 className="text-center text-[#fff] font-bold text-4xl h-[5%]">Taskora</h1>
-            <div className="flex justify-center items-center gap-4 w-full">
-                <div className="w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
+            <div className="flex flex-col lg:flex-row justify-center items-center gap-4 w-full">
+                <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
                             <AssignmentIcon fontSize='large' sx={{ color: '#6358DC' }} />
@@ -136,7 +161,7 @@ const HomePage = () => {
                                         <input type="text" placeholder='Enter your Client Name or project' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={clientName} onChange={handleClientName} />
                                     </div>
                                     <div className='flex justify-between w-full'>
-                                        <FormControl sx={{ mt: 1, width: '30%' }}>
+                                        {/* <FormControl sx={{ mt: 1, width: '30%' }}>
                                             <InputLabel>Due Dates</InputLabel>
                                             <Select
                                                 value={dueDates}
@@ -153,7 +178,7 @@ const HomePage = () => {
                                                 <MenuItem value="Friday">Friday</MenuItem>
                                                 <MenuItem value="Saturday">Saturday</MenuItem>
                                             </Select>
-                                        </FormControl>
+                                        </FormControl> */}
                                         <FormControl sx={{ mt: 1, minWidth: '30%' }}>
                                             <InputLabel >Priority</InputLabel>
                                             <Select
@@ -181,7 +206,7 @@ const HomePage = () => {
                                             </Select>
                                         </FormControl>
                                     </div>
-                                    <Button onClick={handleSetTask} variant="contained" color="success" style={{ width: '25%', height: '50px', alignSelf: 'center' }}>
+                                    <Button onClick={handleSetTask} variant="contained" color="success" sx={{ width: "37%", height: '50px', alignSelf: 'center' }}>
                                         Set Task
                                     </Button>
                                 </div>
@@ -194,7 +219,7 @@ const HomePage = () => {
                         <TaskComponent mode="todo" />
                     </div>
                 </div>
-                <div className="w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
+                <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
                             <AssignmentTurnedInIcon fontSize='large' sx={{ color: '#6358DC' }} />

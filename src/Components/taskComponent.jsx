@@ -7,13 +7,13 @@ const TaskComponent = ({ mode }) => {
 
     const toggleTaskDone = (id) => {
         const updatedList = taskList.map(task =>
-            task.id === id ? { ...task, taskDone: !task.taskDone } : task
+            task.id === id ? { ...task, status: !task.status } : task
         );
         setTaskList(updatedList);
     };
 
     const filteredTasks = taskList.filter(task =>
-        mode === 'done' ? task.taskDone : !task.taskDone
+        mode === 'done' ? task.status : !task.status
     );
 
     const getPriorityColorIcon = (priority) => {
@@ -29,8 +29,8 @@ const TaskComponent = ({ mode }) => {
         }
     };
 
-    const getEffortCount = (effort) => {
-        switch (effort) {
+    const getEffortCount = (level) => {
+        switch (level) {
             case 'Easy':
                 return 1;
             case 'Moderate':
@@ -59,12 +59,12 @@ const TaskComponent = ({ mode }) => {
                 <div key={index} className='w-[97%] bg-white rounded-[12px] py-3 px-4 h-[105px] flex flex-col justify-between gap-2' id={task.id}>
                     <div className='flex justify-between'>
                         <h1 className='text-xl font-bold pl-1'>{task.title}</h1>
-                        <input type="checkbox" checked={task.taskDone} onChange={() => toggleTaskDone(task.id)} />
+                        <input type="checkbox" checked={task.status} onChange={() => toggleTaskDone(task.id)} />
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-600">
                         <div className='flex gap-2'>
                             <div style={{ backgroundColor: colorDay(task.priority) }} className='p-2 rounded-[8px] flex items-center justify-center'>
-                                <p className='text-white font-bold'>{task.dueDate.slice(0, 3)}</p>
+                                {/* <p className='text-white font-bold'>{task.dueDate.slice(0, 3)}</p> */}
                             </div>
                             <div className='flex gap-2'>
                                 {[1, 2, 3].map((n) => (
@@ -72,7 +72,7 @@ const TaskComponent = ({ mode }) => {
                                         key={n}
                                         className='w-6'
                                         src={
-                                            n <= getEffortCount(task.effort)
+                                            n <= getEffortCount(task.level)
                                                 ? getPriorityColorIcon(task.priority)
                                                 : 'src/Components/img/Effort.svg'
                                         }
@@ -81,7 +81,7 @@ const TaskComponent = ({ mode }) => {
                                 ))}
                             </div>
                         </div>
-                        <p className='text-[#2B1887] text-[18px] pr-3'>{task.clientName}</p>
+                        <p className='text-[#2B1887] text-[18px] pr-3'>{task.projectName}</p>
                     </div>
                 </div>
             ))}

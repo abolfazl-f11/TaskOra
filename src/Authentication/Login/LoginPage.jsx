@@ -1,95 +1,150 @@
 import { useState } from "react";
 import { IconButton } from "@mui/material";
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import MailIcon from '@mui/icons-material/Mail';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Toaster, toast } from 'react-hot-toast';
-
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import MailIcon from "@mui/icons-material/Mail";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
 
 const LoginPage = () => {
-    const [showPassword, setShowPassword] = useState(false); /* نشون دادن پسورد */
-    const [userEmail, setUserEmail] = useState("");/* ذخیره ایمیل کاربر */
-    const [userPassword, setUserPassword] = useState("") /* ذخیره رمز کاربر */
+    const [showPassword, setShowPassword] = useState(false);
+    const [userEmail, setUserEmail] = useState("");
+    const [userPassword, setUserPassword] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async () => {/* اطلاعات کاربر ارسال به بکند */
+    const handleLogin = async () => {
         const data = {
             userEmail: userEmail,
             password: userPassword,
         };
 
         try {
-            const require = await axios.post('http://192.168.137.1:3000/auth/login', data);
-            localStorage.setItem('userToken', require.data.accessToken);
-            toast.success(`Welcome back! You’ve successfully logged in.`, { duration: 2000 });
-            setTimeout(() => {
-                navigate('/')
-            }, 1000);
+            const require = await axios.post(
+                `https://5519-89-44-9-169.ngrok-free.app/auth/login`,
+                data
+            );
+            localStorage.setItem("userToken", require.data.accessToken);
+            toast.success(`Welcome back! You’ve successfully logged in.`, {
+                duration: 1500,
+            });
+            navigate("/");
         } catch (error) {
-            toast.error(`It looks like you don't have an account yet. Please sign up to continue`);
+            toast.error(
+                `It looks like you don't have an account yet. Please sign up to continue`
+            );
         }
-        setUserEmail('')
-        setUserPassword('')
-    }
-
+        setUserEmail("");
+        setUserPassword("");
+    };
 
     return (
-        <div className="h-screen flex items-center justify-center bg-[#6358DC]">
-            {/* بخش اصلی */}
-            <main className="w-[90%] h-[90%] border-[1px] border-solid border-white rounded-3xl p-4">
-                <section className="bg-[#f4f7fa] w-full h-full rounded-3xl flex px-10 py-8">
-                    {/* عکس سمت چپ صفحه */}
-                    <div className="flex items-center justify-center w-[50%]">
-                        <img className="w-[65%] h-[65%]" src="src/Authentication/Login/img/Illustration.png" alt="not loding" />
+        <div className="min-h-screen flex items-center justify-center bg-[#6358DC] p-4">
+            <main className="w-full max-w-[1200px] border border-white rounded-3xl p-4">
+                <section className="bg-[#f4f7fa] w-full rounded-3xl flex flex-col lg:flex-row px-4 md:px-10 py-8 gap-6 lg:gap-0">
+                    {/* تصویر سمت چپ */}
+                    <div className="hidden lg:flex items-center justify-center w-full lg:w-1/2">
+                        <img
+                            className="w-[65%] h-[65%] object-contain"
+                            src="src/Authentication/Login/img/Illustration.png"
+                            alt="illustration"
+                        />
                     </div>
-                    {/* فرم صفحه */}
-                    <div className="w-[50%] h-full flex justify-center items-center">
-                        <div className="w-[80%] h-full bg-white rounded-xl p-6 justify-self-center">
-                            {/* قسمت header */}
-                            <div className="h-[30%] flex flex-col justify-between">
-                                <div className="flex flex-col justify-center items-center">
-                                    <h2 className="text-[#2F2F2F] font-bold text-md">Welcome to</h2>
-                                    <h1 className="text-[#6358DC] font-bold text-4xl">Taskora</h1>
-                                </div>
-                                <div className="flex flex-col gap-4">
-                                    <button className="h-14 rounded-lg shadow shadow-[#d3d3d3] flex items-center justify-center gap-4 cursor-pointer">
-                                        <img className="w-6 h-6" src="src/Authentication/Login/img/search 1.svg" alt="" />
-                                        Login with Google
-                                    </button>
-                                </div>
+
+                    {/* فرم لاگین */}
+                    <div className="w-full lg:w-1/2 flex justify-center items-center">
+                        <div className="w-full max-w-[450px] bg-white rounded-xl p-6">
+                            {/* هدر */}
+                            <div className="flex flex-col items-center gap-2 mb-6">
+                                <h2 className="text-[#2F2F2F] font-bold text-md">
+                                    Welcome to
+                                </h2>
+                                <h1 className="text-[#6358DC] font-bold text-4xl">Taskora</h1>
                             </div>
-                            <hr className="mt-4 text-[#BFBFBF]" />
-                            {/* قسمت inputs */}
-                            <div className="w-full h-[70%] flex flex-col gap-6">
-                                <div className="flex flex-col gap-4 mt-4">
-                                    <div className="w-full h-[58px] bg-[#ECECEC] flex items-center justify-center gap-6 rounded-md px-6">
-                                        <MailIcon fontSize="large" />
-                                        <div className="flex flex-col w-full h-full py-2">
-                                            <label className="text-[12px]">Email</label>
-                                            <input name="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} type="email" className="outline-none bg-transparent" placeholder="example@gmail.com" />
-                                        </div>
-                                    </div>
-                                    <div className="w-full h-[58px] bg-[#ECECEC] flex items-center justify-center gap-6 rounded-md px-6">
-                                        <img className="w-6 h-6" src="src/Authentication/Login/img/iconLogin2.svg" alt="" />
-                                        <div className="flex flex-col w-full h-full py-2">
-                                            <label className="text-[12px]">Password</label>
-                                            <input name="password" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} type={showPassword ? "text" : "password"} className="outline-none bg-transparent" placeholder="*********" />
-                                        </div>
-                                        <IconButton onClick={() => setShowPassword(!showPassword)}>
-                                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                                        </IconButton>
+
+                            {/* دکمه گوگل */}
+                            <div className="mb-4">
+                                <button className="w-full h-14 rounded-lg shadow flex items-center justify-center gap-4 bg-white">
+                                    <img
+                                        className="w-6 h-6"
+                                        src="src/Authentication/Login/img/search 1.svg"
+                                        alt="Google icon"
+                                    />
+                                    Login with Google
+                                </button>
+                            </div>
+
+                            <hr className="text-[#BFBFBF] mb-4" />
+
+                            {/* فرم ورود */}
+                            <div className="flex flex-col gap-4">
+                                {/* ایمیل */}
+                                <div className="w-full h-[58px] bg-[#ECECEC] flex items-center gap-4 rounded-md px-4">
+                                    <MailIcon fontSize="medium" />
+                                    <div className="flex flex-col w-full py-2">
+                                        <label className="text-[12px]">Email</label>
+                                        <input
+                                            name="email"
+                                            value={userEmail}
+                                            onChange={(e) => setUserEmail(e.target.value)}
+                                            type="email"
+                                            className="outline-none bg-transparent text-sm"
+                                            placeholder="example@gmail.com"
+                                        />
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-6">
-                                    <a href="/login/forgot-password" className="text-[13px] text-[#6358DC] self-center">Forgot Password?</a>
-                                    <div className="flex flex-col gap-8 items-center">
-                                        <button type="button" className="w-full h-[60px] bg-[#6358DC] text-white rounded-lg cursor-pointer" onClick={handleLogin}>Login</button>
-                                        <p>Don't have an account?<a href="/signup" className="text-[#6358DC]">Sign Up</a></p>
-                                        <Toaster position="top-center" />
+
+                                {/* پسورد */}
+                                <div className="w-full h-[58px] bg-[#ECECEC] flex items-center gap-4 rounded-md px-4">
+                                    <img
+                                        className="w-6 h-6"
+                                        src="src/Authentication/Login/img/iconLogin2.svg"
+                                        alt="Password Icon"
+                                    />
+                                    <div className="flex flex-col w-full py-2">
+                                        <label className="text-[12px]">Password</label>
+                                        <input
+                                            name="password"
+                                            value={userPassword}
+                                            onChange={(e) => setUserPassword(e.target.value)}
+                                            type={showPassword ? "text" : "password"}
+                                            className="outline-none bg-transparent text-sm"
+                                            placeholder="*********"
+                                        />
                                     </div>
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        size="small"
+                                    >
+                                        {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                    </IconButton>
                                 </div>
+
+                                {/* لینک فراموشی رمز */}
+                                <a
+                                    href="/login/forgot-password"
+                                    className="text-[13px] text-[#6358DC] self-end"
+                                >
+                                    Forgot Password?
+                                </a>
+
+                                {/* دکمه لاگین و لینک ثبت‌نام */}
+                                <div className="flex flex-col gap-4 items-center mt-2">
+                                    <button
+                                        type="button"
+                                        className="w-full h-[50px] bg-[#6358DC] text-white rounded-lg text-base"
+                                        onClick={handleLogin}
+                                    >
+                                        Login
+                                    </button>
+                                    <p className="text-sm">
+                                        Don't have an account?{" "}
+                                        <a href="/signup" className="text-[#6358DC] font-medium">
+                                            Sign Up
+                                        </a>
+                                    </p>
+                                </div>
+                                <Toaster position="top-center" />
                             </div>
                         </div>
                     </div>

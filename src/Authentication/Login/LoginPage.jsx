@@ -21,7 +21,7 @@ const LoginPage = () => {
 
         try {
             const require = await axios.post(
-                `https://5519-89-44-9-169.ngrok-free.app/auth/login`,
+                `http://192.168.137.1:3000/auth/login`,
                 data
             );
             localStorage.setItem("userToken", require.data.accessToken);

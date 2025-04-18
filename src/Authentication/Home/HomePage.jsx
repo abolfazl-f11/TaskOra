@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 
 
+
 const style = {
     position: 'absolute',
     top: '50%',
@@ -47,23 +48,46 @@ const HomePage = () => {
 
     const navigator = useNavigate();
     const token = localStorage.getItem('userToken');
-    const handleCheckUserToken = async () => {
-        try {
-            await axios.get(`https://5519-89-44-9-169.ngrok-free.app/auth/task/d`, {
-                headers: {
-                    Authorization: token,
-                }
-            })
-        }
-        catch (error) {
-            console.log('Token invalid or expired');
-            navigator('/login');
-        }
-    }
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setInterval(() => {
+                    axios.get(`http://192.168.137.1:3000/auth/validate-token`, {
+                        headers: {
+                            Authorization: token,
+                        }
+                    })
+                        .catch((error) => {
+                            console.log(error)
+                            localStorage.removeItem('userToken');
+                            navigator('/login');
+                        })
+                }, 3600000);
+
+                const tasksRes = await axios.get(`http://192.168.137.1:3000/task/d`, {
+                    headers: {
+                        Authorization: token,
+                    }
+                })
+
+                setTaskList(tasksRes.data.map(task => ({
+                    ...task,
+                    id: task._id,
+                    status: task.status || 'todo',
+                })));
+
+            } catch (error) {
+                toast.error('Token invalid or expired');
+                navigator('/login');
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const [open, setOpen] = React.useState(false);
-    const handleOpen = async () => {
-        await handleCheckUserToken()
+    const handleOpen = () => {
         setOpen(true)
     };
     const handleClose = () => setOpen(false);
@@ -73,14 +97,15 @@ const HomePage = () => {
     const [textTitle, setTextTitle] = React.useState('');
     const [clientName, setClientName] = React.useState('');
     const [taskList, setTaskList] = useAtom(taskListAtom);
+    const [taskId, setTaskId] = React.useState();
 
     const handleTextTitle = (e) => {
         setTextTitle(e.target.value)
     }
 
-    // const handleDueDates = (e) => {
-    //     setDueDates(e.target.value);
-    // };
+    const handleDueDates = (e) => {
+        setDueDates(e.target.value);
+    };
 
     const handlePriority = (e) => {
         setPriority(e.target.value);
@@ -95,28 +120,32 @@ const HomePage = () => {
     }
 
     const handleSetTask = async () => {
-        if (!textTitle.trim() || !clientName.trim() || !priority.trim()) return;
+        if (!textTitle.trim() || !clientName.trim() || !priority.trim() || !effort.trim() || !dueDates.trim()) return;
 
         const newTask = {
             title: textTitle,
             projectName: clientName,
-            // date: dueDates,
+            days: dueDates,
             priority: priority,
-            // level: effort,
-            status: false,
-            id: new Date()
+            level: effort,
+            status: "todo",
+            id: taskId,
         };
 
         try {
-            const response = await axios.post(`https://5519-89-44-9-169.ngrok-free.app/task/c`, newTask, {
+            const response = await axios.post(`http://192.168.137.1:3000/task/c`, newTask, {
                 headers: {
                     Authorization: token,
                 }
+            }).then((respone) => {
+                console.log(respone.data)
+                setTaskId(respone.data._id)
+                window.location.reload();
             })
-            setTaskList([...taskList, response.data]);
+            setTaskList([...taskList, newTask]);
 
             setTextTitle('');
-            // setDueDates('');
+            setDueDates('');
             setPriority('');
             setEffort('');
             setClientName('');
@@ -134,7 +163,7 @@ const HomePage = () => {
         <div className="min-h-screen bg-[#6358DC] flex flex-col gap-4">
             <h1 className="text-center text-[#fff] font-bold text-4xl h-[5%]">Taskora</h1>
             <div className="flex flex-col lg:flex-row justify-center items-center gap-4 w-full">
-                <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
+                <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4 self-start">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
                             <AssignmentIcon fontSize='large' sx={{ color: '#6358DC' }} />
@@ -161,7 +190,7 @@ const HomePage = () => {
                                         <input type="text" placeholder='Enter your Client Name or project' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={clientName} onChange={handleClientName} />
                                     </div>
                                     <div className='flex justify-between w-full'>
-                                        {/* <FormControl sx={{ mt: 1, width: '30%' }}>
+                                        <FormControl sx={{ mt: 1, width: '30%' }}>
                                             <InputLabel>Due Dates</InputLabel>
                                             <Select
                                                 value={dueDates}
@@ -178,7 +207,7 @@ const HomePage = () => {
                                                 <MenuItem value="Friday">Friday</MenuItem>
                                                 <MenuItem value="Saturday">Saturday</MenuItem>
                                             </Select>
-                                        </FormControl> */}
+                                        </FormControl>
                                         <FormControl sx={{ mt: 1, minWidth: '30%' }}>
                                             <InputLabel >Priority</InputLabel>
                                             <Select
@@ -219,7 +248,7 @@ const HomePage = () => {
                         <TaskComponent mode="todo" />
                     </div>
                 </div>
-                <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4">
+                <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4 self-start">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
                             <AssignmentTurnedInIcon fontSize='large' sx={{ color: '#6358DC' }} />

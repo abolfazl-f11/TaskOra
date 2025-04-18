@@ -34,7 +34,7 @@ const LoginPage = () => {
             };
 
             try {
-                await axios.post('https://77c8-89-44-9-169.ngrok-free.app/auth/register', data);
+                await axios.post('http://192.168.137.1:3000/auth/register', data);
                 toast.success(`Account created successfully! Let’s get started.`, { duration: 2000 });
                 navigate('/login')
             } catch (error) {

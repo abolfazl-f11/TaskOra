@@ -16,7 +16,7 @@ const ForgotPass = () => {
         };
 
         try {
-            await axios.post('https://9858-89-44-9-169.ngrok-free.app//auth/forgot-password', data);
+            await axios.post('http://192.168.137.1:3000/auth/forgot-password', data);
             toast.success(`A password reset link has been sent to your email. Please check your inbox (and spam folder too).`, { duration: 2000 });
             setTimeout(() => {
                 navigate('/login')

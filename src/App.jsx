@@ -8,6 +8,7 @@ const App = () => {
 
   return (
     <div>
+    
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<HomePage />} />

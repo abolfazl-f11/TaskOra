@@ -20,7 +20,7 @@ const LoginPage = () => {
         if (!userName.trim()) {
             toast.error('The username is incorrect, please correct it.', { duration: 2000 })
         }
-        else if (!userPassword.trim()) {
+        else if (userPassword.trim().length <= 5) {
             toast.error('The password is incorrect, please correct it.', { duration: 2000 })
         }
         else if (!userEmail.trim().includes('@gmail.com')) {

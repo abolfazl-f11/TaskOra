@@ -7,13 +7,17 @@ import { Toaster, toast } from 'react-hot-toast';
 
 
 const ForgotPass = () => {
-    const [userEmail, setUserEmail] = useState("");/* ذخیره ایمیل کاربر */
+    const [userEmail, setUserEmail] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async () => {/* اطلاعات کاربر ارسال به بکند */
+    const handleLogin = async () => {
         const data = {
             Email: userEmail,
         };
+
+        if (!userEmail.trim().includes('@gmail.com')) {
+            toast.error('Please enter your email correctly.', { duration: 2000 })
+        }
 
         try {
             await axios.post('http://192.168.137.1:3000/auth/forgot-password', data);
@@ -22,8 +26,7 @@ const ForgotPass = () => {
                 navigate('/login')
             }, 2000);
         } catch (error) {
-            toast.error(`We couldn't find an account with this email. Please create a new one to reset your password`);
-            navigate('/signup')
+            console.error(`We couldn't find an account with this email. Please create a new one to reset your password`);
         }
         setUserEmail('');
     }
@@ -73,6 +76,12 @@ const ForgotPass = () => {
                                     </div>
                                 </div>
                                 <button type="button" className="w-full h-[60px] bg-[#6358DC] text-white rounded-lg cursor-pointer" onClick={handleLogin}>Submit</button>
+                                <div className="text-sm flex justify-center itmes-center gap-1">
+                                    <p>Return to login page?</p>
+                                    <a href="/login" className="text-[#6358DC] font-medium">
+                                        Login
+                                    </a>
+                                </div>
                                 <Toaster position="top-center" />
                             </div>
                         </div>

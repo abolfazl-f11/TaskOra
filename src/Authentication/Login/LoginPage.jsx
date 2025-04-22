@@ -21,7 +21,7 @@ const LoginPage = () => {
 
         try {
             const require = await axios.post(
-                `http://192.168.137.1:3000/auth/login`,
+                `https://c4c1-89-44-9-169.ngrok-free.app/auth/login`,
                 data
             );
             localStorage.setItem("userToken", require.data.accessToken);
@@ -37,6 +37,15 @@ const LoginPage = () => {
         setUserEmail("");
         setUserPassword("");
     };
+
+    const handleLoginGoogle = () => {
+        try {
+            const response = axios.get('https://c4c1-89-44-9-169.ngrok-free.app/auth/google')
+            window.location.href = "https://c4c1-89-44-9-169.ngrok-free.app/auth/google"
+        } catch (error) {
+            console.log(response.error)
+        }
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#6358DC] p-4">
@@ -64,7 +73,7 @@ const LoginPage = () => {
 
                             {/* دکمه گوگل */}
                             <div className="mb-4">
-                                <button className="w-full h-14 rounded-lg shadow flex items-center justify-center gap-4 bg-white">
+                                <button onClick={handleLoginGoogle} className="w-full h-14 rounded-lg shadow flex items-center justify-center gap-4 bg-white">
                                     <img
                                         className="w-6 h-6"
                                         src="src/Authentication/Login/img/search 1.svg"

@@ -33,7 +33,6 @@ const ForgotPass = () => {
 
 
 
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#6358DC] p-4">
             {/* بخش اصلی */}
@@ -64,7 +63,7 @@ const ForgotPass = () => {
                                 <div className="w-full h-[58px] bg-[#ECECEC] flex items-center gap-4 rounded-md px-4">
                                     <MailIcon fontSize="large" />
                                     <div className="flex flex-col w-full py-2">
-                                        <label className="text-[12px]">Name</label>
+                                        <label className="text-[12px]">Email</label>
                                         <input
                                             name="email"
                                             value={userEmail}

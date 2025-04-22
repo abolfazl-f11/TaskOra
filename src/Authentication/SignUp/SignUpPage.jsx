@@ -7,16 +7,17 @@ import MailIcon from '@mui/icons-material/Mail';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
+import ImgBackground from './img/Illustration.png';
 
 
-const LoginPage = () => {
+const SignUpPage = () => {
     const [showPassword, setShowPassword] = useState(false); /* نشون دادن پسورد */
     const [userEmail, setUserEmail] = useState("");/* ذخیره ایمیل کاربر */
     const [userName, setUserName] = useState("");/* ذخیره نام کاربر */
     const [userPassword, setUserPassword] = useState("") /* ذخیره رمز کاربر */
     const navigate = useNavigate();
 
-    const handleLogin = async () => {/* اطلاعات کاربر ارسال به بکند */
+    const handleSignUp = async () => {/* اطلاعات کاربر ارسال به بکند */
         if (!userName.trim()) {
             toast.error('The username is incorrect, please correct it.', { duration: 2000 })
         }
@@ -34,13 +35,16 @@ const LoginPage = () => {
             };
 
             try {
-                await axios.post('http://192.168.137.1:3000/auth/register', data);
-                toast.success(`Account created successfully! Let’s get started.`, { duration: 2000 });
-                navigate('/login')
+                const response = await axios.post('https://c4c1-89-44-9-169.ngrok-free.app/auth/register', data);
+                if (response.data.statusCode == 200) {
+                    toast.success(`Account created successfully! Let’s get started.`, { duration: 2000 });
+                    navigate('/signup/verification')
+                }
             } catch (error) {
                 toast.error(`This email is already registered. Try logging in instead`);
             }
         }
+        localStorage.setItem('emailveri', userEmail)
         setUserEmail('')
         setUserName('')
         setUserPassword('')
@@ -56,7 +60,7 @@ const LoginPage = () => {
                     <div className="hidden lg:flex items-center justify-center w-full lg:w-1/2">
                         <img
                             className="w-[65%] h-[65%] object-contain"
-                            src="src/Authentication/Login/img/Illustration.png"
+                            src={ImgBackground}
                             alt="illustration"
                         />
                     </div>
@@ -69,18 +73,6 @@ const LoginPage = () => {
                                     Welcome to
                                 </h2>
                                 <h1 className="text-[#6358DC] font-bold text-4xl">Taskora</h1>
-                            </div>
-
-                            {/* دکمه گوگل */}
-                            <div className="mb-4">
-                                <button className="w-full h-14 rounded-lg shadow flex items-center justify-center gap-4 bg-white">
-                                    <img
-                                        className="w-6 h-6"
-                                        src="src/Authentication/Login/img/search 1.svg"
-                                        alt="Google icon"
-                                    />
-                                    Login with Google
-                                </button>
                             </div>
 
                             <hr className="text-[#BFBFBF] mb-4" />
@@ -147,7 +139,7 @@ const LoginPage = () => {
                                     <button
                                         type="button"
                                         className="w-full h-[50px] bg-[#6358DC] text-white rounded-lg text-base"
-                                        onClick={handleLogin}
+                                        onClick={handleSignUp}
                                     >
                                         Sign Up
                                     </button>
@@ -168,4 +160,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default SignUpPage;

@@ -7,6 +7,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
+const api = axios.create({
+    baseURL: 'https://7b98-89-44-9-169.ngrok-free.app',
+    headers: {
+        Authorization: localStorage.getItem('userToken'),
+    }
+});
+
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [userEmail, setUserEmail] = useState("");
@@ -20,10 +27,8 @@ const LoginPage = () => {
         };
 
         try {
-            const require = await axios.post(
-                `https://c4c1-89-44-9-169.ngrok-free.app/auth/login`,
-                data
-            );
+            const require = await api.post(`/auth/login`, data);
+            console.log(require.data.accessToken)
             localStorage.setItem("userToken", require.data.accessToken);
             toast.success(`Welcome back! You’ve successfully logged in.`, {
                 duration: 1500,
@@ -40,8 +45,7 @@ const LoginPage = () => {
 
     const handleLoginGoogle = () => {
         try {
-            const response = axios.get('https://c4c1-89-44-9-169.ngrok-free.app/auth/google')
-            window.location.href = "https://c4c1-89-44-9-169.ngrok-free.app/auth/google"
+            const response = api.get('/auth/google');
         } catch (error) {
             console.log(response.error)
         }

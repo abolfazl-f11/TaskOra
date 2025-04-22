@@ -10,31 +10,20 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import { useAtom } from 'jotai';
-import { taskListAtom } from '../../Atoms/AtomsNewTask'
+import { taskListAtom } from '../../Atoms/AtomsNewTask';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
-
-
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: {
-        xs: '90%',
-        sm: '70%',
-        md: '50%',
-        lg: '40%'
-    },
+    width: { xs: '90%', sm: '70%', md: '50%', lg: '40%' },
     bgcolor: 'background.paper',
     boxShadow: 24,
-    p: {
-        xs: 2,
-        sm: 3,
-        md: 4
-    },
+    p: { xs: 2, sm: 3, md: 4 },
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -43,195 +32,144 @@ const style = {
     borderRadius: 5
 };
 
+const api = axios.create({
+    baseURL: 'https://7b98-89-44-9-169.ngrok-free.app',
+    headers: {
+        Authorization: localStorage.getItem('userToken'),
+    }
+});
 
 const HomePage = () => {
-
     const navigator = useNavigate();
-    const token = localStorage.getItem('userToken');
-
-    React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setInterval(() => {
-                    axios.get(`http://192.168.137.1:3000/auth/validate-token`, {
-                        headers: {
-                            Authorization: token,
-                        }
-                    })
-                        .catch((error) => {
-                            console.log(error)
-                            localStorage.removeItem('userToken');
-                            navigator('/login');
-                        })
-                }, 3600000);
-
-                const tasksRes = await axios.get(`http://192.168.137.1:3000/task/d`, {
-                    headers: {
-                        Authorization: token,
-                    }
-                })
-
-                setTaskList(tasksRes.data.map(task => ({
-                    ...task,
-                    id: task._id,
-                    status: task.status || 'todo',
-                })));
-
-            } catch (error) {
-                toast.error('Token invalid or expired');
-                navigator('/login');
-            }
-        };
-
-        fetchData();
-    }, []);
-
     const [open, setOpen] = React.useState(false);
-    const handleOpen = () => {
-        setOpen(true)
-    };
-    const handleClose = () => setOpen(false);
     const [dueDates, setDueDates] = React.useState('');
     const [priority, setPriority] = React.useState('');
     const [effort, setEffort] = React.useState('');
     const [textTitle, setTextTitle] = React.useState('');
     const [clientName, setClientName] = React.useState('');
     const [taskList, setTaskList] = useAtom(taskListAtom);
-    const [taskId, setTaskId] = React.useState();
+    const token = localStorage.getItem('userToken')
 
-    const handleTextTitle = (e) => {
-        setTextTitle(e.target.value)
-    }
-
-    const handleDueDates = (e) => {
-        setDueDates(e.target.value);
+    const validateToken = async () => {
+        try {
+            console.log(token)
+            const response = await axios.get('/auth/validate-token', {
+                headers: {
+                    Authorization: token
+                }
+            });
+            console.log(response);
+        } catch (error) {
+            toast.error('Session expired. Redirecting...');
+            localStorage.removeItem('userToken');
+            navigator('/login');
+        }
     };
 
-    const handlePriority = (e) => {
-        setPriority(e.target.value);
-    };
+    React.useEffect(() => {
 
-    const handleEffort = (e) => {
-        setEffort(e.target.value);
-    };
+        validateToken()
 
-    const handleClientName = (e) => {
-        setClientName(e.target.value)
-    }
+        // const fetchData = async () => {
+        //     try {
+        //         const tasksRes = await api.get('/task/d');
+        //         // setTaskList(tasksRes.data.map(task => ({
+        //         //     ...task,
+        //         //     id: task._id,
+        //         //     status: task.status || 'todo',
+        //         // })));
+        //     } catch (error) {
+        //         toast.error('Failed to fetch tasks or invalid token');
+        //         localStorage.removeItem('userToken');
+        //         navigator('/login');
+        //     }
+        // };
+
+        // fetchData();
+
+    }, []);
 
     const handleSetTask = async () => {
-        if (!textTitle.trim() || !clientName.trim() || !priority.trim() || !effort.trim() || !dueDates.trim()) return;
+        if (!textTitle || !clientName || !priority || !effort || !dueDates) return;
 
         const newTask = {
             title: textTitle,
             projectName: clientName,
             days: dueDates,
-            priority: priority,
+            priority,
             level: effort,
-            status: "todo",
-            id: taskId,
+            status: 'todo'
         };
 
         try {
-            const response = await axios.post(`http://192.168.137.1:3000/task/c`, newTask, {
-                headers: {
-                    Authorization: token,
-                }
-            }).then((respone) => {
-                console.log(respone.data)
-                setTaskId(respone.data._id)
-                window.location.reload();
-            })
-            setTaskList([...taskList, newTask]);
+            const response = await api.post('/task/c', newTask);
+            const createdTask = {
+                ...newTask,
+                id: response.data._id
+            };
+            setTaskList([...taskList, createdTask]);
+            toast.success('Task created successfully');
 
+            // reset form
             setTextTitle('');
             setDueDates('');
             setPriority('');
             setEffort('');
             setClientName('');
             setOpen(false);
-
-            toast.success("Task created successfully")
-        } catch {
-            toast.error("Error creating task")
+        } catch (error) {
+            toast.error('Error creating task');
             setOpen(false);
         }
     };
 
-
     return (
         <div className="min-h-screen bg-[#6358DC] flex flex-col gap-4">
-            <h1 className="text-center text-[#fff] font-bold text-4xl h-[5%]">Taskora</h1>
+            <h1 className="text-center text-white font-bold text-4xl h-[5%]">Taskora</h1>
             <div className="flex flex-col lg:flex-row justify-center items-center gap-4 w-full">
+                {/* To-Do Tasks */}
                 <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4 self-start">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
                             <AssignmentIcon fontSize='large' sx={{ color: '#6358DC' }} />
                             <h1 className='text-2xl font-bold'>To-Do</h1>
                         </div>
-                        <Button onClick={handleOpen} variant="contained" color="success">
-                            New Task
-                        </Button>
-                        <Modal
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                        >
+                        <Button onClick={() => setOpen(true)} variant="contained" color="success">New Task</Button>
+                        <Modal open={open} onClose={() => setOpen(false)}>
                             <Box sx={style}>
                                 <h1 className='text-xl font-bold text-[#6358DC] self-start'>New Task</h1>
                                 <div className='flex flex-col gap-6 w-[95%]'>
                                     <div className='w-full flex flex-col gap-2'>
-                                        <label htmlFor="" className='text-[18px] self-start'>Title</label>
-                                        <input type="text" placeholder='Enter your Title Task' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={textTitle} onChange={handleTextTitle} />
+                                        <label className='text-[18px] self-start'>Title</label>
+                                        <input type="text" placeholder='Enter your Title Task' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={textTitle} onChange={e => setTextTitle(e.target.value)} />
                                     </div>
                                     <div className='w-full flex flex-col gap-2'>
-                                        <label htmlFor="" className='text-[18px] self-start'>Client Name or project</label>
-                                        <input type="text" placeholder='Enter your Client Name or project' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={clientName} onChange={handleClientName} />
+                                        <label className='text-[18px] self-start'>Client Name or project</label>
+                                        <input type="text" placeholder='Enter your Client Name or project' className='w-full outline-none bg-[#ECECEC] p-2 rounded' value={clientName} onChange={e => setClientName(e.target.value)} />
                                     </div>
                                     <div className='flex justify-between w-full'>
                                         <FormControl sx={{ mt: 1, width: '30%' }}>
                                             <InputLabel>Due Dates</InputLabel>
-                                            <Select
-                                                value={dueDates}
-                                                onChange={handleDueDates}
-                                                autoWidth
-                                                label="DueDates"
-                                                variant="outlined"
-                                            >
-                                                <MenuItem value="Sunday">Sunday</MenuItem>
-                                                <MenuItem value="Monday">Monday</MenuItem>
-                                                <MenuItem value="Tuesday">Tuesday</MenuItem>
-                                                <MenuItem value="Wednesday">Wednesday</MenuItem>
-                                                <MenuItem value="Thursday">Thursday</MenuItem>
-                                                <MenuItem value="Friday">Friday</MenuItem>
-                                                <MenuItem value="Saturday">Saturday</MenuItem>
+                                            <Select value={dueDates} onChange={e => setDueDates(e.target.value)} label="Due Dates">
+                                                {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => (
+                                                    <MenuItem key={day} value={day}>{day}</MenuItem>
+                                                ))}
                                             </Select>
                                         </FormControl>
-                                        <FormControl sx={{ mt: 1, minWidth: '30%' }}>
-                                            <InputLabel >Priority</InputLabel>
-                                            <Select
-                                                value={priority}
-                                                onChange={handlePriority}
-                                                autoWidth
-                                                label="Priority"
-                                            >
-                                                <MenuItem value="Low">Low</MenuItem>
-                                                <MenuItem value="Medium">Medium</MenuItem>
-                                                <MenuItem value="High">High</MenuItem>
+                                        <FormControl sx={{ mt: 1, width: '30%' }}>
+                                            <InputLabel>Priority</InputLabel>
+                                            <Select value={priority} onChange={e => setPriority(e.target.value)} label="Priority">
+                                                {["Low", "Medium", "High"].map(level => (
+                                                    <MenuItem key={level} value={level}>{level}</MenuItem>
+                                                ))}
                                             </Select>
                                         </FormControl>
-                                        <FormControl sx={{ mt: 1, minWidth: '33%' }}>
-                                            <InputLabel >Level of Effort</InputLabel>
-                                            <Select
-                                                value={effort}
-                                                onChange={handleEffort}
-                                                autoWidth
-                                                label="Effort"
-                                            >
-                                                <MenuItem value="Easy">Easy</MenuItem>
-                                                <MenuItem value="Moderate">Moderate</MenuItem>
-                                                <MenuItem value="Hard">Hard</MenuItem>
+                                        <FormControl sx={{ mt: 1, width: '33%' }}>
+                                            <InputLabel>Level of Effort</InputLabel>
+                                            <Select value={effort} onChange={e => setEffort(e.target.value)} label="Level of Effort">
+                                                {["Easy", "Moderate", "Hard"].map(eff => (
+                                                    <MenuItem key={eff} value={eff}>{eff}</MenuItem>
+                                                ))}
                                             </Select>
                                         </FormControl>
                                     </div>
@@ -239,15 +177,15 @@ const HomePage = () => {
                                         Set Task
                                     </Button>
                                 </div>
-
                             </Box>
                         </Modal>
-
                     </div>
-                    <div className='flex flex-col items-center gap-2 overflow-y-scroll h-[95%]'>
+                    <div className='flex flex-col items-center gap-2 overflow-y-auto max-h-[75vh]'>
                         <TaskComponent mode="todo" />
                     </div>
                 </div>
+
+                {/* Done Tasks */}
                 <div className="w-[90%] lg:w-[45%] max-h-[90vh] rounded-[12px] bg-[#D5CCFF] p-4 flex flex-col gap-4 self-start">
                     <div className="flex justify-between items-center">
                         <div className='flex gap-2'>
@@ -255,15 +193,14 @@ const HomePage = () => {
                             <h1 className='text-2xl font-bold'>Done</h1>
                         </div>
                     </div>
-                    <div className='flex flex-col items-center gap-2 overflow-y-scroll h-[95%]'>
+                    <div className='flex flex-col items-center gap-2 overflow-y-auto max-h-[75vh]'>
                         <TaskComponent mode="done" />
                     </div>
                 </div>
             </div>
             <Toaster position="top-center" />
         </div>
-    )
-}
-
+    );
+};
 
 export default HomePage;

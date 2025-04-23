@@ -3,6 +3,7 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import TaskComponent from '../../Components/taskComponent';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import { api } from '../Asghar'
 import Modal from '@mui/material/Modal';
 import * as React from 'react';
 import Select from '@mui/material/Select';
@@ -11,7 +12,6 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import { useAtom } from 'jotai';
 import { taskListAtom } from '../../Atoms/AtomsNewTask';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -32,12 +32,7 @@ const style = {
     borderRadius: 5
 };
 
-const api = axios.create({
-    baseURL: 'https://7b98-89-44-9-169.ngrok-free.app',
-    headers: {
-        Authorization: localStorage.getItem('userToken'),
-    }
-});
+
 
 const HomePage = () => {
     const navigator = useNavigate();
@@ -48,44 +43,39 @@ const HomePage = () => {
     const [textTitle, setTextTitle] = React.useState('');
     const [clientName, setClientName] = React.useState('');
     const [taskList, setTaskList] = useAtom(taskListAtom);
-    const token = localStorage.getItem('userToken')
 
-    const validateToken = async () => {
+    React.useEffect(() => {
         try {
-            console.log(token)
-            const response = await axios.get('/auth/validate-token', {
-                headers: {
-                    Authorization: token
-                }
-            });
-            console.log(response);
-        } catch (error) {
+            const tokecChecking = async () => {
+                const response = await api.get('/auth/validate-token')
+                    .then(() => {
+                        toast.success('token is valid')
+                    })
+            }
+            tokecChecking()
+        } catch {
             toast.error('Session expired. Redirecting...');
             localStorage.removeItem('userToken');
             navigator('/login');
         }
-    };
 
-    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const tasksRes = await api.get('/task/d');
+                setTaskList(tasksRes.data.map(task => ({
+                    ...task,
+                    id: task._id,
+                    status: task.status || 'todo',
+                })));
+            } catch (error) {
+                toast.error('Failed to fetch tasks or invalid token');
+                localStorage.removeItem('userToken');
+                navigator('/login');
+            }
+        };
 
-        validateToken()
+        fetchData();
 
-        // const fetchData = async () => {
-        //     try {
-        //         const tasksRes = await api.get('/task/d');
-        //         // setTaskList(tasksRes.data.map(task => ({
-        //         //     ...task,
-        //         //     id: task._id,
-        //         //     status: task.status || 'todo',
-        //         // })));
-        //     } catch (error) {
-        //         toast.error('Failed to fetch tasks or invalid token');
-        //         localStorage.removeItem('userToken');
-        //         navigator('/login');
-        //     }
-        // };
-
-        // fetchData();
 
     }, []);
 

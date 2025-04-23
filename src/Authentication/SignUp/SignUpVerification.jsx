@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from "react";
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 import ImgBackground from './img/Illustration.png'
 import { Toaster, toast } from 'react-hot-toast';
 import { TextField, Box } from "@mui/material";
+import { api } from '../Asghar'
 
 
 const SignUpVerification = () => {
@@ -39,7 +39,7 @@ const SignUpVerification = () => {
 
     const handleVerify = async () => {
         try {
-            const response = await axios.post('https://c4c1-89-44-9-169.ngrok-free.app/auth/confirm', reqValeu);
+            const response = await api.post('https://c4c1-89-44-9-169.ngrok-free.app/auth/confirm', reqValeu);
             toast.success(`Email is verified`, { duration: 2000 });
             localStorage.removeItem('emailveri');
             setTimeout(() => {

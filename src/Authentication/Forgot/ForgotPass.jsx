@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import ImgBackground from './Img/Illustration.png'
 import MailIcon from '@mui/icons-material/Mail';
 import { Toaster, toast } from 'react-hot-toast';
+import { api } from '../Asghar'
 
 
 const ForgotPass = () => {
@@ -20,7 +21,7 @@ const ForgotPass = () => {
         }
 
         try {
-            await axios.post('http://192.168.137.1:3000/auth/forgot-password', data);
+            await api.post('/auth/forgot-password', data);
             toast.success(`A password reset link has been sent to your email. Please check your inbox (and spam folder too).`, { duration: 2000 });
             setTimeout(() => {
                 navigate('/login')

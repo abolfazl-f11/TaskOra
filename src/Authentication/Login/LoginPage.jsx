@@ -3,16 +3,10 @@ import { IconButton } from "@mui/material";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import MailIcon from "@mui/icons-material/Mail";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
+import { api } from '../Asghar'
 
-const api = axios.create({
-    baseURL: 'https://7b98-89-44-9-169.ngrok-free.app',
-    headers: {
-        Authorization: localStorage.getItem('userToken'),
-    }
-});
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);

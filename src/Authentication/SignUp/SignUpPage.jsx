@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import ImgBackground from './img/Illustration.png';
-
+import { api } from '../Asghar'
 
 const SignUpPage = () => {
     const [showPassword, setShowPassword] = useState(false); /* نشون دادن پسورد */
@@ -35,7 +35,7 @@ const SignUpPage = () => {
             };
 
             try {
-                const response = await axios.post('https://c4c1-89-44-9-169.ngrok-free.app/auth/register', data);
+                const response = await api.post('/auth/register', data);
                 if (response.data.statusCode == 200) {
                     toast.success(`Account created successfully! Let’s get started.`, { duration: 2000 });
                     navigate('/signup/verification')
